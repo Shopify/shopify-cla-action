@@ -1,0 +1,27 @@
+name: release
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/release.yml
+  push:
+    branches:
+      - main
+    tags:
+      - v*
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npm install -g yarn
+      - run: yarn
+      - run: yarn run ci:package
+      - uses: int128/release-typescript-action@v1
+        with:
+          # update this major version in case of breaking changes
+          major-version: 1

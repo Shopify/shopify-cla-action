@@ -1,0 +1,14 @@
+# More about action.yml metadata
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions
+name: cla-action
+description: Manage CLA (Contributor License Agreement) based on https://cla.shopify.com/
+inputs:
+  github-token:
+    description: The token to be used with GitHub interactions
+    required: true
+  cla-token:
+    description: The token to access cla.shopify.com
+    required: true
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
