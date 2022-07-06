@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {flatten, isEqual, uniqWith} from 'lodash';
 import {Octokit} from '@octokit/core';
 
