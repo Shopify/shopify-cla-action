@@ -1,4 +1,4 @@
-# cla
+# Shopify CLA action
 
 ## Use case
 
