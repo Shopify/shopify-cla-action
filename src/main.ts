@@ -2,8 +2,23 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 
 import {run} from './run';
+import {matchEvents} from './matcher';
 
 const main = async (): Promise<void> => {
+  const eventCheck = matchEvents(github.context);
+
+  if (!eventCheck.matched) {
+    if (eventCheck.error) {
+      throw new Error(eventCheck.message);
+    }
+
+    if (eventCheck.message) {
+      core.warning(eventCheck.message);
+    }
+
+    return;
+  }
+
   const githubToken = core.getInput('github-token', {required: true});
   const claToken = core.getInput('cla-token', {required: true});
 

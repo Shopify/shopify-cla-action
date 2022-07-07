@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import {Context} from '@actions/github/lib/context';
 import * as coreImport from '@actions/core';
 
 import {run} from '../src/run';
 
 import pullRequestPayload from './fixtures/pull_request.opened.json';
 import issueCommentPayload from './fixtures/issue_comment.created.json';
+import {createContext} from './mocks';
 
 const httpGetJsonMock = jest.fn();
 
@@ -31,30 +30,6 @@ function authorEndpointUrl(usernames: string) {
 }
 
 const httpClientHeaders = {Authorization: `Token ${githubToken}`};
-
-function createContext(eventName: string, payload: any): Context {
-  return {
-    action: '',
-    actor: '',
-    apiUrl: '',
-    graphqlUrl: '',
-    job: '',
-    ref: '',
-    runId: 0,
-    runNumber: 0,
-    serverUrl: '',
-    sha: '',
-    workflow: '',
-    get issue(): {owner: string; repo: string; number: number} {
-      return {number: 0, owner: '', repo: ''};
-    },
-    get repo(): {owner: string; repo: string} {
-      return {owner: 'BPScott', repo: 'cla-test'};
-    },
-    eventName,
-    payload,
-  };
-}
 
 function setClaServiceResponse(data: any) {
   httpGetJsonMock.mockImplementation(() =>
