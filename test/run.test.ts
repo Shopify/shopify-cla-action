@@ -99,7 +99,7 @@ describe('Shopify CLA Action', () => {
   describe('cla signed for all authors: remove cla-signed labels', () => {
     const username = 'signed-user';
 
-    it('pull_request.opened', async () => {
+    it('pull_request_target.opened', async () => {
       setListCommitsData(createGitHubUserCommit(username));
       setClaServiceResponse({signedUsernames: [username]});
 
@@ -148,7 +148,7 @@ describe('Shopify CLA Action', () => {
   describe('cla is not signed for authors: add cla-signed label', () => {
     const username = 'unsigned-user';
 
-    it('pull_request.opened', async () => {
+    it('pull_request_target.opened', async () => {
       setListCommitsData(createGitHubUserCommit(username));
       setClaServiceResponse({signedUsernames: []});
 
@@ -197,7 +197,7 @@ describe('Shopify CLA Action', () => {
   });
 
   describe('cla is not signed when user has no associated github account', () => {
-    it('pull_request.opened', async () => {
+    it('pull_request_target.opened', async () => {
       setListCommitsData(createAnonymousUserCommit());
 
       await run({

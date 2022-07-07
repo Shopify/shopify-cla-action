@@ -19,7 +19,7 @@ Add the following workflow to your repository:
 name: Contributor License Agreement (CLA)
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize]
   issue_comment:
     types: [created]

@@ -10,21 +10,15 @@ interface EventMatch {
 }
 
 export const supportedEvents = [
-  'pull_request.opened',
-  'pull_request.synchronize',
+  'pull_request_target.opened',
+  'pull_request_target.synchronize',
   'issue_comment.created',
 ];
 
 export function matchEvents(context: Context): EventMatch {
   const qualifiedEventName = `${context.eventName}.${context.payload.action}`;
 
-  if (
-    ![
-      'pull_request.opened',
-      'pull_request.synchronize',
-      'issue_comment.created',
-    ].includes(qualifiedEventName)
-  ) {
+  if (!supportedEvents.includes(qualifiedEventName)) {
     return {
       matched: false,
       error: true,
