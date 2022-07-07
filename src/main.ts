@@ -5,6 +5,8 @@ import {run} from './run';
 import {matchEvents} from './matcher';
 
 const main = async (): Promise<void> => {
+  core.debug(JSON.stringify(github.context, null, 2));
+
   const eventCheck = matchEvents(github.context);
 
   if (!eventCheck.matched) {
