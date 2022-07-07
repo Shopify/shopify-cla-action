@@ -27,6 +27,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: |
+      (github.event.issue.pull_request && !github.event.issue.pull_request.merged_at) 
+      || (github.event.pull_request && !github.event.pull_request.merged)
     steps:
       - uses: Shopify/shopify-cla-action@v1
         with:
