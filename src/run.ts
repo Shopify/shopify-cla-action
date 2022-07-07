@@ -20,7 +20,6 @@ interface Inputs {
   octokit: Octokit & Api & {paginate: PaginateInterface};
 }
 
-const CLA_URL = 'https://cla.shopify.com';
 const CLA_REGEX = /I.*signed.*CLA/i;
 
 export const run = async (inputs: Inputs): Promise<void> => {
@@ -70,10 +69,9 @@ export const run = async (inputs: Inputs): Promise<void> => {
 
     const cla = new Cla(
       new GithubService(octokit, context.repo),
-      new AuthorClassificationService(CLA_URL, inputs.claToken || ''),
+      new AuthorClassificationService(config.claUrl, inputs.claToken || ''),
       core,
       config,
-      CLA_URL,
     );
 
     await cla.checkCla(headSha, prNumbers);

@@ -10,13 +10,11 @@ export default class Cla {
     authorClassificationService: AuthorClassificationService,
     core: typeof coreType,
     config: typeof configType,
-    claUrl: string,
   ) {
     this.githubService = githubService;
     this.authorClassificationService = authorClassificationService;
     this.core = core;
     this.config = config;
-    this.claUrl = claUrl;
   }
 
   public async checkCla(headSha: string, prNumbers: number[]) {
@@ -85,7 +83,7 @@ export default class Cla {
     const summaryItems = [
       `${this.config.errorMessages.welcome.replace(
         '{{claUrl}}',
-        this.claUrl,
+        this.config.claUrl,
       )}\n`,
     ];
 
@@ -93,7 +91,7 @@ export default class Cla {
       summaryItems.push(
         `- ${this.config.errorMessages.requestKnownUsers
           .replace('{{usernames}}', usernamesWithoutCla.join(', '))
-          .replace('{{claUrl}}', this.claUrl)}`,
+          .replace('{{claUrl}}', this.config.claUrl)}`,
       );
     }
 
@@ -101,7 +99,7 @@ export default class Cla {
       summaryItems.push(
         `- ${this.config.errorMessages.requestUnknownUsers
           .replace('{{emails}}', orphanCommitEmails.join(', '))
-          .replace('{{claUrl}}', this.claUrl)}`,
+          .replace('{{claUrl}}', this.config.claUrl)}`,
       );
     }
 
@@ -112,5 +110,4 @@ export default class Cla {
   private readonly authorClassificationService: AuthorClassificationService;
   private readonly core: any;
   private readonly config: any;
-  private readonly claUrl: any;
 }

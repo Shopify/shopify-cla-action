@@ -11,4 +11,5 @@ export const config = {
     welcome: 'All contributors have signed and are covered by Shopify’s CLA.',
   },
   label: 'cla-needed',
+  claUrl: 'https://cla.shopify.com',
 };
