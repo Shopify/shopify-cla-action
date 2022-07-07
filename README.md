@@ -28,7 +28,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: Shopify/github-actions/cla-action@v1
+      - uses: Shopify/shopify-cla-action@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cla-token: ${{ secrets.CLA_TOKEN }}
