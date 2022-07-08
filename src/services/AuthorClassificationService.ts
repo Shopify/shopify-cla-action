@@ -1,7 +1,7 @@
 import {includes, partition} from 'lodash';
 import {HttpClient} from '@actions/http-client';
 
-import Author from './Author';
+import Author from '../model/Author';
 
 interface ClassifiedAuthors {
   valid: Author[];

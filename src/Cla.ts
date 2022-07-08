@@ -1,7 +1,7 @@
 import * as coreType from '@actions/core';
 
-import AuthorClassificationService from './AuthorClassificationService';
-import GithubService from './GithubService';
+import AuthorClassificationService from './services/AuthorClassificationService';
+import GithubService from './services/GithubService';
 import {config as configType} from './config';
 
 export default class Cla {

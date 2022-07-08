@@ -1,7 +1,8 @@
 import {flatten, isEqual, uniqWith} from 'lodash';
 import {Octokit} from '@octokit/core';
+import {Workflow, WorkflowRun} from '@octokit/webhooks-definitions/schema';
 
-import Author from './Author';
+import Author from '../model/Author';
 
 interface Repo {
   owner: string;
@@ -47,6 +48,62 @@ export default class GithubService {
       authors: uniqWith(allAuthors, isEqual),
       commitCount: commits.length,
     };
+  }
+
+  public addCommentReaction(commentId: number, reaction = 'eyes') {
+    return this.github.rest.reactions.createForIssueComment({
+      ...this.repo,
+      comment_id: commentId,
+      content: reaction,
+    });
+  }
+
+  public async getPullRequestWorkflowRuns(
+    prNumber: number,
+    workflowId: number,
+    eventName: string,
+  ): Promise<WorkflowRun[]> {
+    const pr = await this.github.rest.pulls.get({
+      ...this.repo,
+      pull_number: prNumber,
+    });
+
+    const branch = pr.data.head.ref;
+
+    const response = await this.github.rest.actions.listWorkflowRuns({
+      ...this.repo,
+      branch,
+      workflow_id: workflowId,
+      event: eventName,
+    });
+
+    return response.data.workflow_runs || [];
+  }
+
+  public async getWorkflowIdByName(name: string) {
+    const workflows = await this.github.rest.actions.listRepoWorkflows({
+      ...this.repo,
+    });
+
+    return workflows.data.workflows.find(
+      (workflowItem: Workflow) => workflowItem.name === name,
+    );
+  }
+
+  public async hasWorkflowFailed(id: number): Promise<boolean> {
+    const workflow = await this.github.rest.actions.getWorkflowRun({
+      ...this.repo,
+      run_id: id,
+    });
+
+    return workflow.data.conclusion === 'failure';
+  }
+
+  public reRunWorkflow(id: number) {
+    return this.github.rest.actions.reRunWorkflow({
+      ...this.repo,
+      run_id: id,
+    });
   }
 
   public async addClaSignatureNeededLabel(
