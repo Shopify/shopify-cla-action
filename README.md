@@ -25,7 +25,7 @@ on:
     types: [created]
 
 jobs:
-  build:
+  cla:
     runs-on: ubuntu-latest
     if: |
       (github.event.issue.pull_request && !github.event.issue.pull_request.merged_at) 
