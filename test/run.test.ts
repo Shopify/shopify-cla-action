@@ -12,7 +12,7 @@ const core = {
   ...coreImport,
   info: jest.fn(),
   warning: jest.fn(),
-  error: jest.fn(),
+  setFailed: jest.fn(),
   debug: jest.fn(),
 };
 
@@ -192,7 +192,7 @@ describe('Shopify CLA Action', () => {
 
       expect(octokit.rest.issues.removeLabel).not.toHaveBeenCalled();
 
-      expect(core.error).toHaveBeenCalled();
+      expect(core.setFailed).toHaveBeenCalled();
     }
   });
 
@@ -235,7 +235,7 @@ describe('Shopify CLA Action', () => {
 
       expect(octokit.rest.issues.removeLabel).not.toHaveBeenCalled();
 
-      expect(core.error).toHaveBeenCalled();
+      expect(core.setFailed).toHaveBeenCalled();
     }
   });
 });

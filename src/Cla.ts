@@ -103,7 +103,7 @@ export default class Cla {
       );
     }
 
-    this.core.error(summaryItems.join('\n'));
+    this.core.setFailed(summaryItems.join('\n'));
   }
 
   private readonly githubService: GithubService;
