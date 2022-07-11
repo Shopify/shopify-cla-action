@@ -71,9 +71,14 @@ function createOctokitMock() {
       issues: {
         addLabels: jest.fn().mockReturnValue(Promise.resolve({})),
         removeLabel: jest.fn().mockReturnValue(Promise.resolve({})),
+        listComments: jest.fn().mockReturnValue(Promise.resolve({data: []})),
       },
       pulls: {
         listCommits: jest.fn(),
+      },
+      reactions: {
+        listForIssue: jest.fn().mockReturnValue(Promise.resolve({data: []})),
+        createForIssueComment: jest.fn(),
       },
     },
   };
@@ -86,6 +91,22 @@ describe('pull_request_target event:', () => {
   function setListCommitsData(commitData: any) {
     octokit.rest.pulls.listCommits.mockReturnValue(
       Promise.resolve({headers: {link: ''}, data: commitData}),
+    );
+  }
+
+  function setCommentsData(commentData: any) {
+    octokit.rest.issues.listComments.mockReturnValue(
+      Promise.resolve({
+        data: commentData,
+      }),
+    );
+  }
+
+  function setReactionsData(reactionsData: any) {
+    octokit.rest.reactions.listForIssue.mockReturnValue(
+      Promise.resolve({
+        data: reactionsData,
+      }),
     );
   }
 
@@ -174,5 +195,62 @@ describe('pull_request_target event:', () => {
     expect(octokit.rest.issues.removeLabel).not.toHaveBeenCalled();
 
     expect(core.setFailed).toHaveBeenCalled();
+  });
+
+  it('does not add reaction when there are no comments requesting CLA check', async () => {
+    const username = 'signed-user';
+    setListCommitsData(createGitHubUserCommit(username));
+    setClaServiceResponse({signedUsernames: [username]});
+
+    setCommentsData([
+      {
+        id: 'fake id',
+        body: 'fake body',
+      },
+    ]);
+
+    await pullRequest({
+      claToken,
+      core,
+      octokit,
+      context: createContext('pull_request_target', pullRequestPayload),
+    });
+
+    expect(octokit.rest.issues.listComments).toHaveBeenCalled();
+    expect(octokit.rest.reactions.listForIssue).not.toHaveBeenCalled();
+  });
+
+  it('adds reactions for comments requesting CLA check', async () => {
+    const username = 'signed-user';
+    setListCommitsData(createGitHubUserCommit(username));
+    setClaServiceResponse({signedUsernames: [username]});
+
+    setCommentsData([
+      {
+        id: 'fake id',
+        body: 'I signed CLA',
+      },
+    ]);
+
+    setReactionsData([
+      {
+        content: 'eyes',
+      },
+    ]);
+
+    await pullRequest({
+      claToken,
+      core,
+      octokit,
+      context: createContext('pull_request_target', pullRequestPayload),
+    });
+
+    expect(octokit.rest.issues.listComments).toHaveBeenCalled();
+    expect(octokit.rest.reactions.createForIssueComment).toHaveBeenCalledWith({
+      comment_id: 'fake id',
+      content: '+1',
+      owner: 'BPScott',
+      repo: 'cla-test',
+    });
   });
 });

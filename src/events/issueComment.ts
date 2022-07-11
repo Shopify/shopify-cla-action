@@ -14,11 +14,6 @@ export const issueComment = async (inputs: EventInputs): Promise<void> => {
   const prNumber = context.issue.number;
   const githubService = new GithubService(octokit, context.repo);
 
-  const commentPayload = context.payload as IssueCommentEvent;
-
-  core.info(`CLA: Adding comment reaction`);
-  githubService.addCommentReaction(commentPayload.comment.id);
-
   const currentWorkflow = await githubService.getWorkflowIdByName(
     context.workflow,
   );
@@ -42,13 +37,20 @@ export const issueComment = async (inputs: EventInputs): Promise<void> => {
   }
 
   const hasLastRunFailed = await githubService.hasWorkflowFailed(lastRun.id);
+  const commentPayload = context.payload as IssueCommentEvent;
 
   if (hasLastRunFailed) {
+    core.info(`CLA: Adding comment reaction`);
+    githubService.addCommentReaction(commentPayload.comment.id);
+
     core.info('CLA: Restarting workflow to check the endpoint status');
     await githubService.reRunWorkflow(lastRun.id);
   } else {
     core.info(
       'CLA: Recent workflow run was successful (cla signed), aborting...',
     );
+
+    core.info(`CLA: Adding comment reaction`);
+    githubService.addCommentReaction(commentPayload.comment.id, '+1');
   }
 };

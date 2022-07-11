@@ -1,7 +1,7 @@
 import {Context} from '@actions/github/lib/context';
 import {IssueCommentEvent} from '@octokit/webhooks-definitions/schema';
 
-const CLA_REGEX = /I.*signed.*CLA/i;
+export const CLA_REGEX = /I.*signed.*CLA/i;
 
 interface EventMatch {
   matched: boolean;

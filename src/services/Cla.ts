@@ -1,8 +1,9 @@
 import * as coreType from '@actions/core';
 
-import AuthorClassificationService from './services/AuthorClassificationService';
-import GithubService from './services/GithubService';
-import {config as configType} from './config';
+import {config as configType} from '../config';
+
+import AuthorClassificationService from './AuthorClassificationService';
+import GithubService from './GithubService';
 
 export default class Cla {
   constructor(
@@ -51,29 +52,33 @@ export default class Cla {
           );
         }),
       );
-    } else {
-      this.core.debug(JSON.stringify(classifiedAuthors));
-      this.core.info(
-        `CLA: ${headSha} Not all authors have signed a CLA or have a GitHub account associated with their email. Failing check`,
-      );
 
-      this.produceFailureMessage(
-        classifiedAuthors.withoutCla.map((author) => author.formattedLogin),
-        classifiedAuthors.withoutGitHubAccount.map(
-          (author) => author.formattedCommitterLine,
-        ),
-      );
-
-      // Add labels from all PRs affected by this check
-      await Promise.all(
-        prNumbers.map(async (prNumber) => {
-          await this.githubService.addClaSignatureNeededLabel(
-            prNumber,
-            this.config.label,
-          );
-        }),
-      );
+      return true;
     }
+
+    this.core.debug(JSON.stringify(classifiedAuthors));
+    this.core.info(
+      `CLA: ${headSha} Not all authors have signed a CLA or have a GitHub account associated with their email. Failing check`,
+    );
+
+    this.produceFailureMessage(
+      classifiedAuthors.withoutCla.map((author) => author.formattedLogin),
+      classifiedAuthors.withoutGitHubAccount.map(
+        (author) => author.formattedCommitterLine,
+      ),
+    );
+
+    // Add labels from all PRs affected by this check
+    await Promise.all(
+      prNumbers.map(async (prNumber) => {
+        await this.githubService.addClaSignatureNeededLabel(
+          prNumber,
+          this.config.label,
+        );
+      }),
+    );
+
+    return false;
   }
 
   private produceFailureMessage(

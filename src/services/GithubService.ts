@@ -50,6 +50,24 @@ export default class GithubService {
     };
   }
 
+  public async listPrComments(prNumber: number) {
+    const response = await this.github.rest.issues.listComments({
+      ...this.repo,
+      issue_number: prNumber,
+    });
+
+    return response.data;
+  }
+
+  public async listCommentReactions(commentId: number) {
+    const response = await this.github.rest.reactions.listForIssue({
+      ...this.repo,
+      comment_id: commentId,
+    });
+
+    return response.data.map((reaction: any) => reaction.content);
+  }
+
   public addCommentReaction(commentId: number, reaction = 'eyes') {
     return this.github.rest.reactions.createForIssueComment({
       ...this.repo,
