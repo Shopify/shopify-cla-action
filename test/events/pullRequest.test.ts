@@ -77,7 +77,9 @@ function createOctokitMock() {
         listCommits: jest.fn(),
       },
       reactions: {
-        listForIssue: jest.fn().mockReturnValue(Promise.resolve({data: []})),
+        listForIssueComment: jest
+          .fn()
+          .mockReturnValue(Promise.resolve({data: []})),
         createForIssueComment: jest.fn(),
       },
     },
@@ -103,7 +105,7 @@ describe('pull_request_target event:', () => {
   }
 
   function setReactionsData(reactionsData: any) {
-    octokit.rest.reactions.listForIssue.mockReturnValue(
+    octokit.rest.reactions.listForIssueComment.mockReturnValue(
       Promise.resolve({
         data: reactionsData,
       }),
@@ -217,7 +219,7 @@ describe('pull_request_target event:', () => {
     });
 
     expect(octokit.rest.issues.listComments).toHaveBeenCalled();
-    expect(octokit.rest.reactions.listForIssue).not.toHaveBeenCalled();
+    expect(octokit.rest.reactions.listForIssueComment).not.toHaveBeenCalled();
   });
 
   it('adds reactions for comments requesting CLA check', async () => {

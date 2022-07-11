@@ -60,7 +60,7 @@ export default class GithubService {
   }
 
   public async listCommentReactions(commentId: number) {
-    const response = await this.github.rest.reactions.listForIssue({
+    const response = await this.github.rest.reactions.listForIssueComment({
       ...this.repo,
       comment_id: commentId,
     });
