@@ -51,12 +51,16 @@ export default class GithubService {
   }
 
   public async listPrComments(prNumber: number) {
-    const response = await this.github.rest.issues.listComments({
-      ...this.repo,
-      issue_number: prNumber,
-    });
+    const response = await this.github.paginate(
+      this.github.rest.issues.listComments,
+      {
+        ...this.repo,
+        issue_number: prNumber,
+      },
+      (res: any) => res.data,
+    );
 
-    return response.data;
+    return flatten(response);
   }
 
   public async listCommentReactions(commentId: number) {
