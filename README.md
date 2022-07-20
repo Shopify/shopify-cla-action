@@ -49,7 +49,7 @@ The check:
 
 * All PRs commit authors are checked against https://cla.shopify.com/
 * If all GitHub usernames signed the CLA, the check will pass
-* Otherwise the check will fail and the build message will ask first-time authors to sign the commits
+* Otherwise the check will fail and the build message will ask first-time authors to sign the CLA
 
 Comments:
 
