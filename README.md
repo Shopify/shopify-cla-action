@@ -27,6 +27,9 @@ on:
 jobs:
   cla:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      pull-requests: write
     if: |
       (github.event.issue.pull_request 
         && !github.event.issue.pull_request.merged_at
@@ -39,6 +42,37 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           cla-token: ${{ secrets.CLA_TOKEN }}
 ```
+
+## How it works / features
+
+The check:
+
+* All PRs commit authors are checked against https://cla.shopify.com/
+* If all GitHub usernames signed the CLA, the check will pass
+* Otherwise the check will fail and the build message will ask first-time authors to sign the commits
+
+Comments:
+
+* Every comment is [tested against regexp](https://github.com/Shopify/shopify-cla-action/blob/main/src/matcher.ts#L4)
+* If the test was successful, it will trigger re-run of previous failed check
+
+Following comments will be ignored:
+
+* Comment on issue
+* Comment on merged PR
+* Comment without word `signed` will be filtered by a workflow definition
+
+Reactions:
+
+* If comment is matched with regexp, action will add :eyes: reaction to that comment
+* If comment has :eyes: reaction and CLA check succeeded, action will also add :+1: reaction
+* If comment has :eyes: reaction and CLA check failed, action will also add :-1: reaction
+
+## Caveats
+
+**This action does not produce any comments.**
+
+If you need additional interaction with your users, please use [@actions/first-interaction](https://github.com/marketplace/actions/first-interaction).
 
 ## Inputs
 
