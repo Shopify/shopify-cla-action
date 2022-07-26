@@ -4,12 +4,12 @@ import {Workflow, WorkflowRun} from '@octokit/webhooks-definitions/schema';
 
 import Author from '../model/Author';
 
-interface Repo {
+export interface Repo {
   owner: string;
   repo: string;
 }
 
-interface PrInfoResponse {
+export interface PrInfoResponse {
   authors: Author[];
   commitCount: number;
 }
