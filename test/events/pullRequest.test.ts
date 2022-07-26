@@ -9,6 +9,7 @@ const httpGetJsonMock = jest.fn();
 const core = {
   ...coreImport,
   info: jest.fn(),
+  error: jest.fn(),
   warning: jest.fn(),
   setFailed: jest.fn(),
   debug: jest.fn(),
@@ -29,12 +30,12 @@ function authorEndpointUrl(usernames: string) {
 
 const httpClientHeaders = {Authorization: `Token ${githubToken}`};
 
-function setClaServiceResponse(data: any) {
-  httpGetJsonMock.mockImplementation(() =>
-    Promise.resolve({
+function setClaServiceResponse(data: any, error = false) {
+  httpGetJsonMock.mockImplementation(() => {
+    return Promise[error ? 'reject' : 'resolve']({
       result: data,
-    }),
-  );
+    });
+  });
 }
 
 function createGitHubUserCommit(username: string) {
@@ -254,5 +255,31 @@ describe('pull_request_target event:', () => {
       owner: 'BPScott',
       repo: 'cla-test',
     });
+  });
+
+  it('shows human-readable message when cla.shopify.com is down', async () => {
+    const username = 'signed-user';
+    setListCommitsData(createGitHubUserCommit(username));
+    setClaServiceResponse(undefined, true);
+
+    await pullRequest({
+      claToken,
+      core,
+      octokit,
+      context: createContext('pull_request_target', pullRequestPayload),
+    });
+
+    expect(httpGetJsonMock).toHaveBeenCalledTimes(3);
+    expect(httpGetJsonMock).toHaveBeenCalledWith(
+      authorEndpointUrl(username),
+      httpClientHeaders,
+    );
+
+    expect(core.error).toHaveBeenCalledWith(
+      'CLA: Failed to get a response from cla.shopify.com, please try again later.',
+    );
+
+    expect(octokit.rest.issues.removeLabel).not.toHaveBeenCalled();
+    expect(octokit.rest.issues.addLabels).not.toHaveBeenCalled();
   });
 });

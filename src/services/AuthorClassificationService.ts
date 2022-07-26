@@ -1,5 +1,6 @@
 import {includes, partition} from 'lodash';
 import {HttpClient} from '@actions/http-client';
+import {TypedResponse} from '@actions/http-client/lib/interfaces';
 
 import Author from '../model/Author';
 
@@ -17,9 +18,13 @@ export default class AuthorClassificationService {
   constructor(
     claSignedCheckerEndpoint: string,
     claSignedCheckerSecret: string,
+    retryTimes = 3,
+    retryWait = 5000,
   ) {
     this.claSignedCheckerEndpoint = claSignedCheckerEndpoint;
     this.claSignedCheckerSecret = claSignedCheckerSecret;
+    this.retryTimes = 3;
+    this.retryWait = 5000;
   }
 
   /**
@@ -59,13 +64,7 @@ export default class AuthorClassificationService {
 
     if (logins) {
       const http = new HttpClient('github-actions-cla');
-
-      const response = await http.getJson<ClaResponse>(
-        `${this.claSignedCheckerEndpoint}/api/contributor-check?usernames=${logins}`,
-        {
-          Authorization: `Token ${this.claSignedCheckerSecret}`,
-        },
-      );
+      const response = await this.retryGetResponse(http, logins);
 
       if (response.result?.signedUsernames) {
         signedUsernames = response.result.signedUsernames;
@@ -77,6 +76,32 @@ export default class AuthorClassificationService {
     });
   }
 
+  private async retryGetResponse(
+    http: HttpClient,
+    logins: string,
+    retryAttempts = this.retryTimes - 1,
+    waitTime = this.retryWait,
+  ): Promise<TypedResponse<ClaResponse>> {
+    try {
+      const response = await http.getJson<ClaResponse>(
+        `${this.claSignedCheckerEndpoint}/api/contributor-check?usernames=${logins}`,
+        {
+          Authorization: `Token ${this.claSignedCheckerSecret}`,
+        },
+      );
+
+      return response;
+    } catch (error) {
+      if (retryAttempts === 0) {
+        throw error;
+      }
+
+      return this.retryGetResponse(http, logins, retryAttempts - 1, waitTime);
+    }
+  }
+
   private readonly claSignedCheckerEndpoint: string;
   private readonly claSignedCheckerSecret: string;
+  private readonly retryWait: number;
+  private readonly retryTimes: number;
 }

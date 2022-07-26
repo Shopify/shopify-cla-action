@@ -29,9 +29,19 @@ export default class Cla {
       `CLA: ${headSha} Found ${commitsResult.commitCount} commits with ${commitsResult.authors.length} unique authors`,
     );
 
-    const classifiedAuthors = await this.authorClassificationService.classify(
-      commitsResult.authors,
-    );
+    let classifiedAuthors;
+
+    try {
+      classifiedAuthors = await this.authorClassificationService.classify(
+        commitsResult.authors,
+      );
+    } catch (error) {
+      this.core.error(
+        'CLA: Failed to get a response from cla.shopify.com, please try again later.',
+      );
+
+      return false;
+    }
 
     const problematicAuthorCount =
       classifiedAuthors.withoutCla.length +
