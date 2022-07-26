@@ -11,6 +11,7 @@ interface EventMatch {
 
 export const supportedEvents = [
   'pull_request_target.opened',
+  'pull_request_target.reopened',
   'pull_request_target.synchronize',
   'issue_comment.created',
 ];
