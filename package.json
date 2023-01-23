@@ -21,7 +21,7 @@
     "@octokit/webhooks-definitions": "^3.67.3",
     "@octokit/core": "^3.6.0",
     "@octokit/plugin-paginate-rest": "^2.19.0",
-    "@octokit/plugin-rest-endpoint-methods": "^5.15.0"
+    "@octokit/plugin-rest-endpoint-methods": "^7.0.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.182",
