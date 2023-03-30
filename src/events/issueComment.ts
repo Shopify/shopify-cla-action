@@ -3,6 +3,7 @@ import * as core from '@actions/core';
 
 import GithubService from '../services/GithubService';
 import {EventInputs} from '../types';
+import {COMMENTS} from '../templates';
 
 export const issueComment = async (inputs: EventInputs): Promise<void> => {
   const {context, octokit} = inputs;
@@ -31,6 +32,8 @@ export const issueComment = async (inputs: EventInputs): Promise<void> => {
   const lastRun = recentRuns.shift();
 
   if (!lastRun) {
+    githubService.addComment(prNumber, COMMENTS.restartWorkflowComment);
+
     throw new Error(
       `Cannot find last run for the workflow: ${currentWorkflow.id}`,
     );
@@ -43,8 +46,13 @@ export const issueComment = async (inputs: EventInputs): Promise<void> => {
     core.info(`CLA: Adding comment reaction`);
     githubService.addCommentReaction(commentPayload.comment.id);
 
-    core.info('CLA: Restarting workflow to check the endpoint status');
-    await githubService.reRunWorkflow(lastRun.id);
+    try {
+      core.info('CLA: Restarting workflow to check the endpoint status');
+      await githubService.reRunWorkflow(lastRun.id);
+    } catch (error) {
+      githubService.addComment(prNumber, COMMENTS.restartWorkflowComment);
+      core.error('CLA: Failed to restart workflow, please try again later.');
+    }
   } else {
     core.info(
       'CLA: Recent workflow run was successful (cla signed), aborting...',

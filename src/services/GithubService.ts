@@ -102,6 +102,14 @@ export default class GithubService {
     return response.data.workflow_runs || [];
   }
 
+  public addComment(prNumber: number, body: string) {
+    return this.github.rest.issues.createComment({
+      ...this.repo,
+      issue_number: prNumber,
+      body,
+    });
+  }
+
   public async getWorkflowIdByName(name: string) {
     const workflows = await this.github.rest.actions.listRepoWorkflows({
       ...this.repo,
