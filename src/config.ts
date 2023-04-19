@@ -1,7 +1,7 @@
 export const config = {
   errorMessages: {
     requestKnownUsers:
-      '{{usernames}}: [Sign the CLA]({{claUrl}}) to have your PR reviewed.',
+      '{{usernames}}: [Sign the CLA]({{claUrl}}) and comment "I have signed the CLA!" to re-run the checks and have your PR reviewed.',
     requestUnknownUsers:
       '{{emails}}: Connect your email address with a GitHub account and [sign the CLA]({{claUrl}}) to have your PR reviewed.',
     welcome:
