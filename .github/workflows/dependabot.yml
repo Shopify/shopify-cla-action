@@ -20,7 +20,7 @@ permissions:
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    if: startsWith(github.head_ref, 'dependabot/')
+    if: github.actor == 'dependabot[bot]'
     steps:
       - name: Retrieve Dependabot metadata
         id: metadata
