@@ -24,4 +24,4 @@ jobs:
       - uses: int128/release-typescript-action@v1
         with:
           # update this major version in case of breaking changes
-          major-version: 1
+          major-version: 2
