@@ -25,3 +25,4 @@ jobs:
         with:
           # update this major version in case of breaking changes
           major-version: 1
+
