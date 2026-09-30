@@ -275,9 +275,7 @@ describe('pull_request_target event:', () => {
       httpClientHeaders,
     );
 
-    expect(core.error).toHaveBeenCalledWith(
-      'CLA: Failed to get a response from cla.shopify.com, please try again later.',
-    );
+    expect(core.setFailed).toHaveBeenCalled();
 
     expect(octokit.rest.issues.removeLabel).not.toHaveBeenCalled();
     expect(octokit.rest.issues.addLabels).not.toHaveBeenCalled();

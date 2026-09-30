@@ -36,7 +36,7 @@ export default class Cla {
         commitsResult.authors,
       );
     } catch (error) {
-      this.core.error(
+      this.core.setFailed(
         'CLA: Failed to get a response from cla.shopify.com, please try again later.',
       );
 
