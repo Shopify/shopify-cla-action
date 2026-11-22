@@ -10,5 +10,5 @@ inputs:
     description: The token to access cla.shopify.com
     required: true
 runs:
-  using: 'node16'
+  using: 'node26'
   main: 'dist/index.js'
